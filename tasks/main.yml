@@ -1,0 +1,23 @@
+- name: include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags: elasticsearch
+  
+- include: "{{ ansible_os_family }}.yml"
+  become: yes
+  tags: elasticsearch
+
+- name: enable elasticsearch service
+  service:
+    name: elasticsearch
+    state: started
+    enabled: yes
+  tags: elasticsearch
+
+- name: copy elasticsearch config
+  template:
+    src: elasticsearch.yml
+    dest: /etc/elasticsearch/elasticsearch.yml
+    mode: 0644
+  notify:
+    - restart elasticsearch
+  tags: elasticsearch

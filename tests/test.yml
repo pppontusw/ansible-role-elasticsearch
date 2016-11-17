@@ -1,0 +1,15 @@
+- name: setup
+  hosts: all
+  roles: 
+    - elasticsearch
+  tags: setup
+
+- name: test
+  hosts: all
+  tasks:
+    - wait_for: port=9200
+    - get_url:
+        url: "http://{{ansible_default_ipv4.address}}:9200"
+        dest: /tmp
+      delegate_to: localhost
+  tags: test

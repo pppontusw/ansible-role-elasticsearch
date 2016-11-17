@@ -1,0 +1,27 @@
+- name: install elasticsearch repo
+  copy: src=elasticsearch.repo
+        dest=/etc/yum.repos.d/
+        owner=root group=root mode=0644
+
+- name: import elastic key
+  rpm_key:
+    key: http://packages.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: install elasticsearch
+  yum: name={{item}} state=present
+  with_items:
+    - java-1.8.0-openjdk
+    - elasticsearch
+
+- name: enable firewalld service
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld
+
+- name: configure firewalld
+  firewalld: "port=9200/tcp permanent=true state=enabled"
+  notify: restart firewalld
+  tags: firewalld
